@@ -131,16 +131,18 @@ Rcpp::List fitModel(const TX & x,
                 solver->update_strong(path, path_ext, m, m2);
                 solver->solve();
             }
-            estimates.add_results(solver->getBeta0(), solver->getBetas(), idx_pen);
+            estimates.add_results(solver->getBeta0(), solver->getBetas(), solver->getDeviance(), idx_pen);
         }
     }
 
     // fix first penalties (when path automatically computed)
     if (penalty_user[0] == 0.0) {
-        path[0] = exp(2 * log(path[1]) - log(path[2]));
+        //path[0] = exp(2 * log(path[1]) - log(path[2]));
+        path[0] = pow(10, 2 * log10(path[1]) - log10(path[2]));
     }
     if (penalty_user_ext[0] == 0.0 && nv_ext > 0) {
-        path_ext[0] = exp(2 * log(path_ext[1]) - log(path_ext[2]));
+        //path_ext[0] = exp(2 * log(path_ext[1]) - log(path_ext[2]));
+        path_ext[0] = pow(10, 2 * log10(path_ext[1]) - log10(path_ext[2]));
     }
 
     // collect results in list and return to R
@@ -150,6 +152,7 @@ Rcpp::List fitModel(const TX & x,
             Rcpp::Named("gammas") = estimates.getGammas(),
             Rcpp::Named("alpha0") = estimates.getAlpha0(),
             Rcpp::Named("alphas") = estimates.getAlphas(),
+            Rcpp::Named("deviance") = estimates.getDeviance(), // ESK
             Rcpp::Named("penalty") = solver->getYs() * path,
             Rcpp::Named("penalty_ext") = solver->getYs() * path_ext,
             Rcpp::Named("num_passes") = solver->getNumPasses(),

@@ -32,6 +32,7 @@ protected:
     using Xrnet<TX, TZ>::betas;
     using Xrnet<TX, TZ>::gammas;
     using Xrnet<TX, TZ>::alphas;
+    using Xrnet<TX, TZ>::deviance;
     using Xrnet<TX, TZ>::ext;
     using Xrnet<TX, TZ>::intr;
     using Xrnet<TX, TZ>::intr_ext;
@@ -133,7 +134,9 @@ public:
     MatXd get_error_mat(){return error_mat;};
 
     // save results for single penalty
-    virtual void add_results(double b0, VecXd coef, const int & idx) {
+    virtual void add_results(double b0, VecXd coef, double dev, const int & idx) {
+
+        deviance[idx] = dev;
 
         // unstandardize variables
         coef = ys * coef.cwiseProduct(xs);

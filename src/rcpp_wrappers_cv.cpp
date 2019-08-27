@@ -115,6 +115,7 @@ Eigen::VectorXd fitModelCV(const TX & x,
 
     // solve grid of penalties in decreasing order
     double b0_outer = solver->getBeta0();
+    double dev_outer = solver->getDeviance();
     Eigen::VectorXd betas_outer = solver->getBetas();
 
     int idx_pen = 0;
@@ -128,12 +129,13 @@ Eigen::VectorXd fitModelCV(const TX & x,
                 solver->solve();
                 b0_outer = solver->getBeta0();
                 betas_outer = solver->getBetas();
+                dev_outer = solver->getDeviance();
             }
             else {
                 solver->update_strong(path, path_ext, m, m2);
                 solver->solve();
             }
-            results.add_results(solver->getBeta0(), solver->getBetas(), idx_pen);
+            results.add_results(solver->getBeta0(), solver->getBetas(), solver->getDeviance(), idx_pen);
         }
     }
 

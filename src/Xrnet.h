@@ -31,6 +31,7 @@ protected:
     VecXd alpha0;
     MatXd alphas;
     VecXd strong_sum;
+    VecXd deviance; // ESK
 
 public:
     // constructor (dense external)
@@ -67,6 +68,7 @@ public:
         alpha0 = Eigen::VectorXd::Zero(num_penalty_);
         alphas = Eigen::MatrixXd::Zero(nv_ext_, num_penalty_);
         strong_sum = Eigen::VectorXd::Zero(num_penalty_);
+        deviance = Eigen::VectorXd::Zero(num_penalty_); // ESK
     };
 
     // constructor (sparse external)
@@ -103,6 +105,7 @@ public:
         alpha0 = Eigen::VectorXd::Zero(num_penalty_);
         alphas = Eigen::MatrixXd::Zero(nv_ext_, num_penalty_);
         strong_sum = Eigen::VectorXd::Zero(num_penalty_);
+        deviance = Eigen::VectorXd::Zero(num_penalty_); // ESK
     };
 
     // destructor
@@ -117,9 +120,14 @@ public:
     MatXd getGammas(){return gammas;};
     VecXd getAlpha0(){return alpha0;};
     MatXd getAlphas(){return alphas;};
+    VecXd getDeviance(){return deviance;}; // ESK
+    double getDeviance(const int &idx){return deviance[idx];};
+
 
     // save results for single penalty
-    virtual void add_results(double b0, VecXd coef, const int & idx) {
+    virtual void add_results(double b0, VecXd coef, double dev, const int & idx) {
+
+        deviance[idx] = dev;
 
         // unstandardize variables by sd of y (if continuous)
         coef = ys * coef.cwiseProduct(xs);
